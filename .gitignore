@@ -1,6 +1,0 @@
-*.spec
-*.iss
-build
-dist
-Output
-*.bat
