@@ -13,8 +13,8 @@ import threading
 APP_NAME = "SparxFast"
 VERSION = "1.0.3"
 
-GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/main/version.json"
-GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/main/apps/SparxFastSetup.exe"
+GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
+GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
 
 # PATH CONFIG
 BASE_DIR = os.path.join(os.environ.get('ProgramData', 'C:\\ProgramData'), APP_NAME)
