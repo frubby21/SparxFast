@@ -11,7 +11,7 @@ import subprocess
 import threading
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
@@ -57,7 +57,7 @@ def check_for_self_update(status_label):
     try:
         response = requests.get(GITHUB_RAW_VERSION_URL, timeout=5)
         remote_version = response.json().get("version")
-        if remote_version != VERSION:
+        if remote_version > VERSION:
             if messagebox.askyesno("Update", f"v{remote_version} available. Download and install?"):
                 status_label.config(text="Downloading...", foreground="#ffa500")
                 r = requests.get(GITHUB_INSTALLER_URL, stream=True)
