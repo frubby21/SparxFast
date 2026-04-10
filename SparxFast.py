@@ -11,7 +11,7 @@ import subprocess
 import threading
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
@@ -58,10 +58,10 @@ def check_for_self_update(status_label):
         response = requests.get(GITHUB_RAW_VERSION_URL, timeout=5)
         remote_version = response.json().get("version")
         if remote_version != VERSION:
-            if messagebox.askyesno("Update", f"v{remote_version} available. Download?"):
+            if messagebox.askyesno("Update", f"v{remote_version} available. Download and install?"):
                 status_label.config(text="Downloading...", foreground="#ffa500")
                 r = requests.get(GITHUB_INSTALLER_URL, stream=True)
-                temp_path = os.path.join(os.environ['TEMP'], "SparxUpdate.exe")
+                temp_path = os.path.join(os.environ['TEMP'], "SparxFastSetup.exe")
                 with open(temp_path, 'wb') as f:
                     for chunk in r.iter_content(8192): f.write(chunk)
                 subprocess.Popen([temp_path, "/SILENT", "/SP-"])
@@ -70,18 +70,18 @@ def check_for_self_update(status_label):
 
 def search_log(code):
     if not os.path.exists(LOG_FILE):
-        messagebox.showinfo("Error", "No history found.")
+        messagebox.showinfo("Error", "No log file found. Solve a question first.")
         return
     with open(LOG_FILE, "r", encoding="utf-8") as f:
         for entry in f.read().split('-'*40):
             if f"CODE: {code.upper()}" in entry.upper():
                 messagebox.showinfo(f"History: {code}", entry.strip())
                 return
-    messagebox.showwarning("Not Found", f"Code {code} not in logs.")
+    messagebox.showwarning("Not Found", f"Code {code} not found in logs. Check your input.")
 
 def solve_task(config, status_label, root):
     if not config.get("key"):
-        messagebox.showerror("Error", "No API Key set in Settings.")
+        messagebox.showerror("Error", "No Gemini API key found. Please enter one in Settings.")
         return
     
     status_label.config(text="Capturing...", foreground="#00ffcc")
