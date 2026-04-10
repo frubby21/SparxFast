@@ -23,7 +23,7 @@ if __name__ == "__main__":
     elevate()
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
@@ -100,12 +100,15 @@ def solve_task(config, status_label, root):
     root.update()
     time.sleep(1)
     status_label.config(text="Move mouse to top-left corner of Sparx Maths.", foreground="#00ffcc")
+    root.update()
     time.sleep(2)
     x1, y1 = pyautogui.position()
-    status_label.config(text="Move mouse to bottom-rightcorner of Sparx Maths.", foreground="#00ffcc")
+    status_label.config(text="Move mouse to bottom-right corner of Sparx Maths.", foreground="#00ffcc")
+    root.update()
     time.sleep(2)
     x2, y2 = pyautogui.position()
     status_label.config(text="Complete. You'll get your answer soon.", foreground="#00ffcc")
+    root.update()
     
     try:
         width, height = x2 - x1, y2 - y1
