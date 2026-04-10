@@ -9,9 +9,21 @@ from tkinter import messagebox, simpledialog, ttk
 import requests
 import subprocess
 import threading
+import ctypes, sys, os
+
+def elevate():
+    if ctypes.windll.shell32.IsUserAnAdmin():
+        return 
+    path = sys.executable
+    params = ' '.join(sys.argv[1:])
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", path, params, None, 0)
+    sys.exit()
+
+if __name__ == "__main__":
+    elevate()
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
