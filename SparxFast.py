@@ -23,7 +23,7 @@ if __name__ == "__main__":
     elevate()
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.7"
+VERSION = "1.0.8"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
@@ -98,11 +98,14 @@ def solve_task(config, status_label, root):
     
     status_label.config(text="Capturing...", foreground="#00ffcc")
     root.update()
-    
+    time.sleep(1)
+    status_label.config(text="Move mouse to top-left corner of Sparx Maths.", foreground="#00ffcc")
     time.sleep(2)
     x1, y1 = pyautogui.position()
+    status_label.config(text="Move mouse to bottom-rightcorner of Sparx Maths.", foreground="#00ffcc")
     time.sleep(2)
     x2, y2 = pyautogui.position()
+    status_label.config(text="Complete. You'll get your answer soon.", foreground="#00ffcc")
     
     try:
         width, height = x2 - x1, y2 - y1
@@ -120,7 +123,7 @@ def solve_task(config, status_label, root):
     except Exception as e:
         messagebox.showerror("Error", str(e))
     finally:
-        status_label.config(text="System Ready", foreground="white")
+        status_label.config(text="Ready.", foreground="#0059ff")
 
 # --- SETTINGS WINDOW ---
 
@@ -175,7 +178,7 @@ def run_gui():
     ttk.Label(root, text=f"{APP_NAME} v{VERSION}", font=("Segoe UI", 14, "bold"), style="Main.TLabel").pack(pady=(20, 5))
     ttk.Label(root, text=f"Source: {origin_text}", font=("Segoe UI", 8), style="Main.TLabel", foreground=origin_color).pack(pady=(0, 10))
 
-    status_label = ttk.Label(root, text="System Ready", font=("Segoe UI", 8), style="Main.TLabel")
+    status_label = ttk.Label(root, text="Ready.", font=("Segoe UI", 8), style="Main.TLabel", foreground="#0059ff")
     status_label.pack(pady=5)
     
     ttk.Button(root, text="Start Capture", command=lambda: solve_task(config, status_label, root), width=25).pack(pady=5)
