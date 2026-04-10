@@ -11,7 +11,7 @@ import subprocess
 import threading
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
