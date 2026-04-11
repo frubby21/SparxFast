@@ -23,22 +23,20 @@ if __name__ == "__main__":
     elevate()
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.9"
+VERSION = "1.0.10"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
 
-# PATH CONFIG
 BASE_DIR = os.path.join(os.environ.get('ProgramData', 'C:\\ProgramData'), APP_NAME)
-LOG_FILE = os.path.join(BASE_DIR, "sparx.log")
-SCREENSHOT_PATH = os.path.join(BASE_DIR, "sparx_capture.png")
-CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
-HUB_REGISTRY = os.path.join(os.environ.get('ProgramData', 'C:\\ProgramData'), "flobby25 Hub", "installed_apps.json")
+LOG_FILE = os.path.join(BASE_DIR, "questions.log")
+SCREENSHOT_PATH = os.path.join(BASE_DIR, "screenshot.png")
+CONFIG_PATH = os.path.join(BASE_DIR, "appsettings.json")
+HUB_REGISTRY = os.path.join(os.environ.get('ProgramData', 'C:\\ProgramData'), "Flobby's Hub", "installed_apps.json")
 
 if not os.path.exists(BASE_DIR):
     os.makedirs(BASE_DIR, exist_ok=True)
 
-# --- CONFIG HELPERS ---
 
 def load_config():
     if os.path.exists(CONFIG_PATH):
@@ -62,16 +60,30 @@ def is_managed_by_hub():
         except: return False
     return False
 
-# --- LOGIC ---
-
 def check_for_self_update(status_label):
     if is_managed_by_hub(): return 
     try:
         response = requests.get(GITHUB_RAW_VERSION_URL, timeout=5)
         remote_version = response.json().get("version")
         if remote_version > VERSION:
-            if messagebox.askyesno("Update", f"v{remote_version} available. Download and install?"):
-                status_label.config(text="Downloading...", foreground="#ffa500")
+            if messagebox.askyesno("Updater", f"v{remote_version} is available. Would you like to update now?"):
+                status_label.config(text="Downloading setup program... (Update)", foreground="#ffa500")
+                r = requests.get(GITHUB_INSTALLER_URL, stream=True)
+                temp_path = os.path.join(os.environ['TEMP'], "SparxFastSetup.exe")
+                with open(temp_path, 'wb') as f:
+                    for chunk in r.iter_content(8192): f.write(chunk)
+                subprocess.Popen([temp_path, "/SILENT", "/SP-"])
+                os._exit(0)
+    except: pass
+
+def check_for_self_rollback(status_label):
+    if is_managed_by_hub(): return 
+    try:
+        response = requests.get(GITHUB_RAW_VERSION_URL, timeout=5)
+        remote_version = response.json().get("version")
+        if remote_version < VERSION:
+            if messagebox.askyesno("Rollbacker", f"v{remote_version} is available. Would you like to rollback now?"):
+                status_label.config(text="Downloading setup program... (Rollback)", foreground="#ffa500")
                 r = requests.get(GITHUB_INSTALLER_URL, stream=True)
                 temp_path = os.path.join(os.environ['TEMP'], "SparxFastSetup.exe")
                 with open(temp_path, 'wb') as f:
@@ -89,14 +101,14 @@ def search_log(code):
             if f"CODE: {code.upper()}" in entry.upper():
                 messagebox.showinfo(f"History: {code}", entry.strip())
                 return
-    messagebox.showwarning("Not Found", f"Code {code} not found in logs. Check your input.")
+    messagebox.showwarning("Question Not Found", f"Code {code} not found in logs. Please check your input..")
 
 def solve_task(config, status_label, root):
     if not config.get("key"):
         messagebox.showerror("Error", "No Gemini API key found. Please enter one in Settings.")
         return
     
-    status_label.config(text="Capturing...", foreground="#00ffcc")
+    status_label.config(text="Loading Capture...", foreground="#00ffcc")
     root.update()
     time.sleep(1)
     status_label.config(text="Move mouse to top-left corner of Sparx Maths.", foreground="#00ffcc")
@@ -107,7 +119,7 @@ def solve_task(config, status_label, root):
     root.update()
     time.sleep(2)
     x2, y2 = pyautogui.position()
-    status_label.config(text="Complete. You'll get your answer soon.", foreground="#00ffcc")
+    status_label.config(text="Capture complete. Please wait while Gemini processes your request.", foreground="#00ffcc")
     root.update()
     
     try:
@@ -128,8 +140,6 @@ def solve_task(config, status_label, root):
     finally:
         status_label.config(text="Ready.", foreground="#0059ff")
 
-# --- SETTINGS WINDOW ---
-
 def open_settings(root, current_config):
     settings_win = tk.Toplevel(root)
     settings_win.title("Settings")
@@ -148,7 +158,6 @@ def open_settings(root, current_config):
 
     tk.Button(settings_win, text="Change Gemini Key", command=update_key, width=20).pack(pady=5)
 
-    # Always On-Top Toggle
     ontop_var = tk.BooleanVar(value=current_config.get("always_on_top", True))
     
     def toggle():
@@ -157,8 +166,6 @@ def open_settings(root, current_config):
         save_config(current_config)
 
     tk.Checkbutton(settings_win, text="Always On-Top", variable=ontop_var, command=toggle).pack(pady=5)
-
-# --- MAIN GUI ---
 
 def run_gui():
     root = tk.Tk()
@@ -173,13 +180,8 @@ def run_gui():
     style.theme_use('clam')
     style.configure("TButton", font=("Segoe UI", 10), padding=5)
     style.configure("Main.TLabel", background="#212121", foreground="white")
-
-    managed = is_managed_by_hub()
-    origin_text = "Flobby Hub Managed" if managed else "Standalone Installer"
-    origin_color = "#00ffcc" if managed else "#ffa500"
     
     ttk.Label(root, text=f"{APP_NAME} v{VERSION}", font=("Segoe UI", 14, "bold"), style="Main.TLabel").pack(pady=(20, 5))
-    ttk.Label(root, text=f"Source: {origin_text}", font=("Segoe UI", 8), style="Main.TLabel", foreground=origin_color).pack(pady=(0, 10))
 
     status_label = ttk.Label(root, text="Ready.", font=("Segoe UI", 8), style="Main.TLabel", foreground="#0059ff")
     status_label.pack(pady=5)
