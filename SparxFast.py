@@ -23,7 +23,7 @@ if __name__ == "__main__":
     elevate()
 
 APP_NAME = "SparxFast"
-VERSION = "1.0.10"
+VERSION = "1.1.0"
 
 GITHUB_RAW_VERSION_URL = "https://raw.githubusercontent.com/frubby21/SparxFast/refs/heads/main/version.json"
 GITHUB_INSTALLER_URL = "https://github.com/frubby21/SparxFast/raw/refs/heads/main/apps/SparxFastSetup.exe"
